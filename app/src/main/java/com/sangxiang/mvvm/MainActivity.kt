@@ -16,6 +16,7 @@ import com.sangxiang.mvvm.sqlite.VideoEntity
 import com.sangxiang.mvvm.viewmodel.MainActivityViewModel
 import io.reactivex.Observable
 import android.icu.lang.UCharacter.GraphemeClusterBreak.T
+import com.sangxiang.mvvm.sqlite.User
 import io.reactivex.ObservableEmitter
 import io.reactivex.ObservableOnSubscribe
 import io.reactivex.android.schedulers.AndroidSchedulers
@@ -37,45 +38,70 @@ class MainActivity : AppCompatActivity() {
         mViewModel.getVideoLists()
         mViewModel.videoList.observe(this, android.arch.lifecycle.Observer<List<VideoModel>> {
             Log.e("sangxiang","数据变化了")
-            it?.let {
-                var list1=ArrayList<VideoEntity>()
-               for (item in it){
-                   list1.add(VideoEntity(item.id,item.imageUrl,item.videoUrl))
-               }
-                insert(list1)
-
-            }
+//            it?.let {
+//                var list1=ArrayList<VideoEntity>()
+//               for (item in it){
+//                   list1.add(VideoEntity(item.id,item.imageUrl,item.videoUrl))
+//               }
+//                insert(list1)
+//
+//            }
 
         })
+        insertTest()
 
 
     }
 
+    fun insertTest(){
+        var mUserDao=  VideoDatabase.getInstance(this).userDao()
+        var mBuffer= StringBuffer()
+        Thread(Runnable {
+            val users = java.util.ArrayList<User>()
+            users.add(User("t" + System.currentTimeMillis() / 1000, "jordan", 20))
+            users.add(User("t" + System.currentTimeMillis() / 1000, "james", 21))
+            val longs = mUserDao.insertAll(users)
+            if (longs != null && longs!!.size > 0) {
+                for (aLong in longs!!) {
+                    val msg = "insert some success, index is " + aLong!!
+                    mBuffer.append(msg + "\n")
+                    Log.i("sangxiang", msg)
+                }
+            } else {
+                val msg = "insert some fail "
+                mBuffer.append(msg + "\n")
+                Log.i("sangxiang", msg)
+            }
+        }).start()
+    }
+
     fun insert(list:List<VideoEntity>){
-        Observable.create(ObservableOnSubscribe<String> { e ->
-            VideoDatabase.getInstance(this).videoDao().insertAll(list)
-            e.onNext("success")
-        }).subscribeOn(Schedulers.io())
-          .observeOn(AndroidSchedulers.mainThread())
-          .subscribe(object: io.reactivex.Observer<String>{
-              override fun onComplete() {
-
-              }
-
-              override fun onSubscribe(d: Disposable) {
-
-              }
-
-              override fun onNext(t: String) {
-                    Log.e("sangxiang",t)
-                    getAll()
-              }
-
-              override fun onError(e: Throwable) {
-
-              }
-
-          })
+//
+//
+//        Observable.create(ObservableOnSubscribe<String> { e ->
+//            VideoDatabase.getInstance(this).videoDao().insert(list[0])
+//            e.onNext("success")
+//        }).subscribeOn(Schedulers.io())
+//          .observeOn(AndroidSchedulers.mainThread())
+//          .subscribe(object: io.reactivex.Observer<String>{
+//              override fun onComplete() {
+//
+//              }
+//
+//              override fun onSubscribe(d: Disposable) {
+//
+//              }
+//
+//              override fun onNext(t: String) {
+//                    Log.e("sangxiang",t)
+//                    getAll()
+//              }
+//
+//              override fun onError(e: Throwable) {
+//
+//              }
+//
+//          })
     }
     fun getAll(){
         Observable.create(ObservableOnSubscribe<LiveData<List<VideoEntity>>> { e ->

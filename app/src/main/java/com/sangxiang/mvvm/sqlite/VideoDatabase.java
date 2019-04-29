@@ -24,7 +24,7 @@ import android.content.Context;
 import android.util.Log;
 
 // List of the entry classes and associated TypeConverters
-@Database(entities = {VideoEntity.class}, version = 1)
+@Database(entities = {VideoEntity.class,User.class}, version = 1)
 @TypeConverters(DateConverter.class)
 public abstract class VideoDatabase extends RoomDatabase {
 
@@ -49,4 +49,5 @@ public abstract class VideoDatabase extends RoomDatabase {
 
     // The associated DAOs for the database
     public abstract VideoDao videoDao();
+    public abstract UserDao userDao();
 }

@@ -5,7 +5,7 @@ import android.arch.persistence.room.Index
 import android.arch.persistence.room.PrimaryKey
 import java.util.*
 
-@Entity(tableName = "video", indices = [Index(value = *arrayOf("id"), unique = true)])
+@Entity(tableName = "video")
 data class VideoEntity(
     @PrimaryKey
     var id: Int=0,
